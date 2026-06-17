@@ -95,12 +95,12 @@ export async function processPaymentEvent(event: WebhookParseResult): Promise<Pr
           where: { orderId: order.id, status: 'ACTIVE' },
           data: { expiresAt: new Date(Date.now() + DEPOSIT_RESERVATION_HOURS * 3_600_000) },
         });
-        await event_(tx, order.id, 'DEPOSIT_PAID', 'Seña pagada; auto reservado.');
+        await event_(tx, order.id, 'DEPOSIT_PAID', 'Anticipo pagado; auto reservado.');
         notify = async () => {
           if (buyerEmail) await notifyBuyerReservation(emailCtx);
           await notifyAdmin(
             `Nueva reserva ${order.orderNumber}`,
-            `Seña pagada por ${order.car.title}.`,
+            `Anticipo pagado por ${order.car.title}.`,
           );
         };
       } else {

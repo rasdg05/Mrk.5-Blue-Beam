@@ -10,9 +10,9 @@ export interface SellerState {
 }
 
 const schema = z.object({
-  name: z.string().min(2, 'Ingresá tu nombre'),
+  name: z.string().min(2, 'Ingresa tu nombre'),
   email: z.string().email('Email inválido'),
-  phone: z.string().min(8, 'Ingresá un teléfono válido'),
+  phone: z.string().min(8, 'Ingresa un teléfono válido'),
   message: z.string().optional(),
 });
 

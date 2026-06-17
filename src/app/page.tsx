@@ -11,7 +11,7 @@ export const dynamic = 'force-dynamic';
 const STEPS = [
   { icon: FileCheck2, title: 'Verificación legal', text: 'Revisamos documentos y consultamos REPUVE vía Buró Vehicular.' },
   { icon: Camera, title: 'Fotografiado', text: 'Fotografiamos cada auto antes de publicarlo. Solo lo verificado entra al catálogo.' },
-  { icon: Wallet, title: 'Reservá online', text: 'Apartá tu auto con una seña por Mercado Pago o crypto (stablecoins).' },
+  { icon: Wallet, title: 'Reserva online', text: 'Aparta tu auto con un anticipo por Mercado Pago o crypto (stablecoins).' },
   { icon: BadgeCheck, title: 'Entrega segura', text: 'Coordinamos entrega, factura y cambio de propietario.' },
 ];
 
@@ -29,11 +29,11 @@ export default async function HomePage() {
               <BadgeCheck size={16} /> Autos verificados y fotografiados
             </span>
             <h1 className="mx-auto mt-5 max-w-3xl text-4xl font-extrabold tracking-tight text-slate-900 sm:text-5xl">
-              Comprá tu próximo auto, <span className="text-brand-600">verificado</span> y con pago
+              Compra tu próximo auto, <span className="text-brand-600">verificado</span> y con pago
               seguro
             </h1>
             <p className="mx-auto mt-4 max-w-2xl text-lg text-slate-600">
-              Cada auto pasa revisión legal antes de publicarse. Reservá con seña por Mercado Pago o
+              Cada auto pasa revisión legal antes de publicarse. Reserva con un anticipo por Mercado Pago o
               crypto, sin sorpresas.
             </p>
             <div className="mt-8 flex justify-center gap-3">
@@ -72,7 +72,7 @@ export default async function HomePage() {
           </div>
           {featured.length === 0 ? (
             <p className="rounded-xl border border-dashed border-slate-300 bg-white p-8 text-center text-slate-500">
-              Aún no hay autos publicados. Volvé pronto.
+              Aún no hay autos publicados. Vuelve pronto.
             </p>
           ) : (
             <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">

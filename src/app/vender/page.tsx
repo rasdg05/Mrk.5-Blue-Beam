@@ -5,7 +5,7 @@ import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { SellerForm } from './seller-form';
 
-export const metadata: Metadata = { title: 'Vendé tu auto' };
+export const metadata: Metadata = { title: 'Vende tu auto' };
 
 const STEPS = [
   { icon: ShieldCheck, title: '1. Registro + KYC', text: 'Verificamos tu identidad para una operación limpia y segura.' },
@@ -20,9 +20,9 @@ export default function SellPage() {
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-10">
         <div className="grid gap-10 lg:grid-cols-[1fr_400px]">
           <div>
-            <h1 className="text-3xl font-extrabold text-slate-900">Vendé tu auto con respaldo</h1>
+            <h1 className="text-3xl font-extrabold text-slate-900">Vende tu auto con respaldo</h1>
             <p className="mt-3 text-slate-600">
-              Sumá tu auto a un catálogo de autos verificados. Nos encargamos de la revisión legal,
+              Suma tu auto a un catálogo de autos verificados. Nos encargamos de la revisión legal,
               el fotografiado y el cobro seguro con Mercado Pago o crypto. Vos recibís tu pago con
               todo en regla.
             </p>
@@ -42,7 +42,7 @@ export default function SellPage() {
           </div>
 
           <Card className="h-fit p-6">
-            <h2 className="text-lg font-bold text-slate-900">Empezá ahora</h2>
+            <h2 className="text-lg font-bold text-slate-900">Empieza ahora</h2>
             <p className="mb-4 mt-1 text-sm text-slate-500">
               Dejanos tus datos y te contactamos para la verificación.
             </p>

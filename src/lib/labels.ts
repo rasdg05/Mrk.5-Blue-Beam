@@ -30,7 +30,7 @@ export const fuelLabel: Record<FuelType, string> = {
 
 export const orderStatusLabel: Record<OrderStatus, string> = {
   AWAITING_PAYMENT: 'Esperando pago',
-  RESERVED: 'Reservado (seña pagada)',
+  RESERVED: 'Reservado (anticipo pagado)',
   PAID: 'Pagado',
   CANCELLED: 'Cancelado',
   EXPIRED: 'Vencido',

@@ -11,8 +11,8 @@ export interface CheckoutState {
 const schema = z.object({
   carId: z.string().min(1),
   method: z.enum(['mercadopago', 'crypto']),
-  email: z.string().email('Ingresá un email válido'),
-  name: z.string().min(2, 'Ingresá tu nombre completo'),
+  email: z.string().email('Ingresa un email válido'),
+  name: z.string().min(2, 'Ingresa tu nombre completo'),
   phone: z.string().optional(),
 });
 
@@ -25,9 +25,9 @@ function messageFor(code: OrderErrorCode): string {
     case 'METHOD_NOT_ACCEPTED':
       return 'Ese método de pago no está habilitado para este auto.';
     case 'INVALID_DEPOSIT_CONFIG':
-      return 'Hubo un problema con la configuración de la seña. Contactanos.';
+      return 'Hubo un problema con la configuración del anticipo. Contáctanos.';
     case 'THIRD_PARTY_FULL_NOT_ALLOWED':
-      return 'Este auto solo admite reserva con seña en línea.';
+      return 'Este auto solo admite reserva con un anticipo en línea.';
     case 'PROVIDER_ERROR':
     default:
       return 'No pudimos iniciar el pago. Intentá nuevamente en unos minutos.';

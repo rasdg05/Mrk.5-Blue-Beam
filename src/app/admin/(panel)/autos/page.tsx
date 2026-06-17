@@ -47,7 +47,7 @@ export default async function AdminCarsPage() {
             {cars.length === 0 ? (
               <tr>
                 <td colSpan={4} className="px-4 py-10 text-center text-slate-500">
-                  Todavía no hay autos. Creá el primero.
+                  Todavía no hay autos. Crea el primero.
                 </td>
               </tr>
             ) : (

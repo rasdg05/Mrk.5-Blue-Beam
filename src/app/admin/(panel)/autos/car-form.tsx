@@ -123,17 +123,17 @@ export function CarForm({
           </Field>
           <Field label="Modo de pago">
             <Select name="paymentMode" defaultValue={c?.paymentMode ?? 'DEPOSIT'}>
-              <option value="DEPOSIT">Seña / reserva</option>
+              <option value="DEPOSIT">Anticipo / reserva</option>
               <option value="FULL">Pago total (solo stock propio)</option>
             </Select>
           </Field>
-          <Field label="Tipo de seña">
+          <Field label="Tipo de anticipo">
             <Select name="depositType" defaultValue={c?.depositType ?? 'PERCENT'}>
               <option value="PERCENT">Porcentaje (%)</option>
               <option value="FIXED">Monto fijo (MXN)</option>
             </Select>
           </Field>
-          <Field label="Valor de la seña" hint="% si es porcentaje, MXN si es monto fijo">
+          <Field label="Valor del anticipo" hint="% si es porcentaje, MXN si es monto fijo">
             <Input name="depositValue" type="number" step="0.01" defaultValue={depositDefault} />
           </Field>
         </div>

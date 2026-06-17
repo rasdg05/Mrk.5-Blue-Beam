@@ -67,7 +67,7 @@ export function CheckoutForm({ carId, mode, payLabel, acceptsMercadoPago, accept
         {pending
           ? 'Redirigiendo…'
           : mode === 'DEPOSIT'
-            ? `Reservar con seña ${payLabel}`
+            ? `Reservar con un anticipo ${payLabel}`
             : `Pagar ${payLabel}`}
       </Button>
       <p className="text-center text-xs text-slate-500">

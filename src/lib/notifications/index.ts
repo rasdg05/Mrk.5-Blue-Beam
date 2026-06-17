@@ -56,7 +56,7 @@ export async function notifyBuyerReservation(ctx: OrderEmailContext): Promise<vo
     subject: `Reserva confirmada — ${ctx.carTitle} (${ctx.orderNumber})`,
     html: layout(
       '¡Tu reserva está confirmada! 🎉',
-      `<p>Recibimos tu seña de <strong>${formatMXN(ctx.amountDueCentavos)}</strong> por el <strong>${ctx.carTitle}</strong>.</p>
+      `<p>Recibimos tu anticipo de <strong>${formatMXN(ctx.amountDueCentavos)}</strong> por el <strong>${ctx.carTitle}</strong>.</p>
        <p>Saldo a liquidar al concretar la operación: <strong>${formatMXN(ctx.balanceDueCentavos)}</strong>.</p>
        <p>Número de orden: <strong>${ctx.orderNumber}</strong>. Te contactaremos para coordinar la entrega y la firma.</p>`,
     ),

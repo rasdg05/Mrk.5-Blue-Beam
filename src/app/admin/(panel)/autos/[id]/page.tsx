@@ -124,7 +124,7 @@ export default async function EditCarPage({
           <Card className="p-5">
             <h3 className="text-sm font-semibold text-slate-700">Revisión legal (Buró Vehicular)</h3>
             <p className="mt-1 text-xs text-slate-500">
-              Registrá el resultado de la verificación manual antes de publicar.
+              Registra el resultado de la verificación manual antes de publicar.
             </p>
             <form action={recordCarVerification} className="mt-3 space-y-3">
               <input type="hidden" name="id" value={car.id} />
@@ -159,7 +159,7 @@ export default async function EditCarPage({
               <Check ok={car.priceMxn > 0}>Precio definido ({formatMXN(car.priceMxn)})</Check>
               <Check ok={car.legalCheckStatus === 'APPROVED'}>Revisión legal aprobada</Check>
               <Check ok={car.paymentMode !== 'DEPOSIT' || (!!car.depositType && !!car.depositValue)}>
-                Seña configurada
+                Anticipo configurado
               </Check>
             </ul>
 
@@ -189,7 +189,7 @@ export default async function EditCarPage({
               )}
             </div>
             {!ready && car.status !== 'PUBLISHED' && (
-              <p className="mt-2 text-xs text-amber-600">Completá los requisitos para publicar.</p>
+              <p className="mt-2 text-xs text-amber-600">Completa los requisitos para publicar.</p>
             )}
           </Card>
         </div>

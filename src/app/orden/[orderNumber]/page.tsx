@@ -60,7 +60,7 @@ export default async function OrderStatusPage({
               {order.car.title}
             </Link>
             <dl className="mt-3 space-y-1 text-sm">
-              <Row label={order.intent === 'DEPOSIT' ? 'Seña pagada' : 'Total'} value={formatMXN(order.amountDueMxn)} strong />
+              <Row label={order.intent === 'DEPOSIT' ? 'Anticipo pagado' : 'Total'} value={formatMXN(order.amountDueMxn)} strong />
               {order.balanceDueMxn > 0 && (
                 <Row label="Saldo a liquidar (offline)" value={formatMXN(order.balanceDueMxn)} />
               )}

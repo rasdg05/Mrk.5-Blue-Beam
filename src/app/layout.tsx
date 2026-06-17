@@ -7,7 +7,7 @@ export const metadata: Metadata = {
     template: '%s · Autos MX',
   },
   description:
-    'Compraventa de autos usados verificados en México. Cada auto pasa revisión legal y se reserva con seña por Mercado Pago o crypto (stablecoins).',
+    'Compraventa de autos usados verificados en México. Cada auto pasa revisión legal y se reserva con un anticipo por Mercado Pago o crypto (stablecoins).',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

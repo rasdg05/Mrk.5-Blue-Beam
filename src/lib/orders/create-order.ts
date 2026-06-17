@@ -92,7 +92,7 @@ export async function createOrder(input: CreateOrderInput): Promise<CreateOrderR
     if (car.ownership === 'THIRD_PARTY' && car.paymentMode === 'FULL') {
       throw new OrderError(
         'THIRD_PARTY_FULL_NOT_ALLOWED',
-        'Los autos de terceros solo admiten seña en línea (Fase 1)',
+        'Los autos de terceros solo admiten anticipo en línea (Fase 1)',
       );
     }
 
@@ -177,7 +177,7 @@ export async function createOrder(input: CreateOrderInput): Promise<CreateOrderR
       orderNumber: created.order.orderNumber,
       kind: created.intent,
       amount: { amount: created.amountDue, currency: 'MXN' },
-      description: `${created.intent === 'DEPOSIT' ? 'Seña' : 'Pago'} — ${created.carTitle}`,
+      description: `${created.intent === 'DEPOSIT' ? 'Anticipo' : 'Pago'} — ${created.carTitle}`,
       buyer: {
         id: input.buyer.userId,
         email: input.buyer.email,

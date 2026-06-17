@@ -27,7 +27,7 @@ export function formatMXN(centavos: number): string {
 }
 
 /**
- * Compute the deposit ("seña") amount in centavos from a listing's config.
+ * Compute the deposit ("anticipo") amount in centavos from a listing's config.
  * - FIXED: depositValue is centavos.
  * - PERCENT: depositValue is basis points (1000 = 10.00%).
  * Always clamped to [0, priceCentavos].

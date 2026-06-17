@@ -170,16 +170,16 @@ export async function publishCar(formData: FormData): Promise<void> {
   if (!car) redirect('/admin/autos');
 
   const errors: string[] = [];
-  if (car!._count.photos < 1) errors.push('Agregá al menos una foto');
+  if (car!._count.photos < 1) errors.push('Agrega al menos una foto');
   if (car!.priceMxn <= 0) errors.push('El precio debe ser mayor a 0');
   if (car!.paymentMode === 'DEPOSIT' && (!car!.depositType || !car!.depositValue)) {
-    errors.push('Configurá la seña (tipo y valor)');
+    errors.push('Configura el anticipo (tipo y valor)');
   }
   if (car!.ownership === 'THIRD_PARTY' && car!.paymentMode === 'FULL') {
-    errors.push('Autos de terceros solo admiten seña en línea (Fase 1)');
+    errors.push('Autos de terceros solo admiten anticipo en línea (Fase 1)');
   }
   if (car!.legalCheckStatus !== 'APPROVED') {
-    errors.push('Registrá la revisión legal aprobada antes de publicar');
+    errors.push('Registra la revisión legal aprobada antes de publicar');
   }
 
   if (errors.length > 0) {

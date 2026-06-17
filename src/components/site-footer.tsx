@@ -17,7 +17,7 @@ export function SiteFooter() {
           <p>
             <strong className="text-slate-900">Pagos seguros</strong>
             <br />
-            Reservá con seña por Mercado Pago o crypto (stablecoins).
+            Reserva con un anticipo por Mercado Pago o crypto (stablecoins).
           </p>
         </div>
         <div className="flex items-start gap-2">

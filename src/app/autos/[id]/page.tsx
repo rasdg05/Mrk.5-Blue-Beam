@@ -114,7 +114,7 @@ export default async function CarDetailPage({ params }: { params: Promise<{ id: 
 
               {car.paymentMode === 'DEPOSIT' && (
                 <div className="mt-2 rounded-lg bg-brand-50 px-3 py-2 text-sm text-brand-800">
-                  Reservalo con una seña de <strong>{formatMXN(deposit)}</strong>. El resto se
+                  Resérvalo con un anticipo de <strong>{formatMXN(deposit)}</strong>. El resto se
                   liquida al concretar la operación.
                 </div>
               )}

@@ -20,7 +20,7 @@ export const DEFAULT_PLATFORM_FEE_BPS = 500;
 /** How long an UNPAID checkout soft-reserves a car before the cron releases it. */
 export const SOFT_HOLD_MINUTES = 30;
 
-/** How long a PAID deposit ("seña") holds a car for offline balance settlement. */
+/** How long a PAID deposit ("anticipo") holds a car for offline balance settlement. */
 export const DEPOSIT_RESERVATION_HOURS = 48;
 
 /** True when an order's price crosses the PLD identification threshold. */

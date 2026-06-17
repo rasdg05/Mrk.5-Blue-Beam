@@ -71,7 +71,7 @@ export default async function AdminOrderDetail({
               {order.car.title}
             </Link>
             <dl className="mt-3 grid grid-cols-2 gap-2 text-sm">
-              <Cell label="Intención" value={order.intent === 'DEPOSIT' ? 'Seña' : 'Pago total'} />
+              <Cell label="Intención" value={order.intent === 'DEPOSIT' ? 'Anticipo' : 'Pago total'} />
               <Cell label="Cobrado online" value={formatMXN(order.amountDueMxn)} strong />
               <Cell label="Precio del auto" value={formatMXN(order.priceMxnSnapshot)} />
               <Cell label="Saldo offline" value={formatMXN(order.balanceDueMxn)} />
@@ -101,7 +101,7 @@ export default async function AdminOrderDetail({
                 <div key={p.id} className="rounded-lg border border-slate-200 p-3 text-sm">
                   <div className="flex items-center justify-between">
                     <span className="font-medium text-slate-800">
-                      {p.provider} · {p.kind === 'DEPOSIT' ? 'Seña' : 'Total'}
+                      {p.provider} · {p.kind === 'DEPOSIT' ? 'Anticipo' : 'Total'}
                     </span>
                     <Badge tone={p.status === 'APPROVED' ? 'green' : p.status === 'REFUNDED' ? 'red' : 'amber'}>
                       {paymentStatusLabel[p.status]}
