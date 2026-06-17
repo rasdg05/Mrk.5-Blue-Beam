@@ -1,0 +1,533 @@
+// Autos MX — marketplace + brokerage de autos usados (México)
+// Money is stored as integer MINOR UNITS (centavos for MXN) to avoid float errors.
+// Provider payloads are stored as JSONB for audit / long retention (PLD/AML, CFDI).
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// =============================================================================
+// Catalog taxonomy
+// =============================================================================
+
+model Brand {
+  id     String  @id @default(cuid())
+  name   String
+  slug   String  @unique
+  models Model[]
+  cars   Car[]
+
+  createdAt DateTime @default(now())
+}
+
+model Model {
+  id      String @id @default(cuid())
+  brandId String
+  brand   Brand  @relation(fields: [brandId], references: [id], onDelete: Cascade)
+  name    String
+  slug    String
+  cars    Car[]
+
+  createdAt DateTime @default(now())
+
+  @@unique([brandId, slug])
+  @@index([brandId])
+}
+
+// =============================================================================
+// Car / Listing  (one row = one physical car)
+// =============================================================================
+
+enum CarOwnership {
+  PLATFORM // own stock
+  THIRD_PARTY // seller-owned (brokerage)
+}
+
+enum CarStatus {
+  DRAFT // being created by admin
+  SUBMITTED // uploaded by a seller, awaiting verification
+  PUBLISHED // live in the public catalog
+  RESERVED // held by an order (soft/hard)
+  SOLD
+  ARCHIVED
+}
+
+enum TransmissionType {
+  MANUAL
+  AUTOMATIC
+}
+
+enum FuelType {
+  GASOLINE
+  DIESEL
+  HYBRID
+  ELECTRIC
+  GAS
+}
+
+enum PaymentMode {
+  DEPOSIT // reservation deposit ("seña"); balance settled offline
+  FULL // full price collected online
+}
+
+enum DepositType {
+  FIXED // depositValue = centavos
+  PERCENT // depositValue = basis points (1000 = 10.00%)
+}
+
+enum RepuveStatus {
+  CLEAR // sin reporte de robo
+  REPORTED
+  UNKNOWN
+}
+
+enum CarLegalStatus {
+  PENDING // awaiting Buró Vehicular / legal review
+  APPROVED
+  REJECTED
+}
+
+model Car {
+  id    String  @id @default(cuid())
+  vin   String? // NIV
+  title String // human label, e.g. "Toyota Hilux 2019 SR"
+
+  brandId String
+  brand   Brand  @relation(fields: [brandId], references: [id])
+  modelId String
+  model   Model  @relation(fields: [modelId], references: [id])
+
+  year         Int
+  trim         String?
+  mileageKm    Int
+  transmission TransmissionType
+  fuel         FuelType
+  color        String?
+  doors        Int?
+  description  String?          @db.Text
+
+  priceMxn      Int // centavos
+  locationCity  String?
+  locationState String?
+
+  // ----- per-listing payment configuration -----
+  paymentMode        PaymentMode  @default(DEPOSIT)
+  depositType        DepositType?
+  depositValue       Int? // centavos (FIXED) or basis points (PERCENT)
+  acceptsMercadoPago Boolean      @default(true)
+  acceptsCrypto      Boolean      @default(false)
+
+  // ----- provenance -----
+  ownership CarOwnership @default(PLATFORM)
+  sellerId  String?
+  seller    Seller?      @relation(fields: [sellerId], references: [id])
+
+  // ----- verification / trust signals -----
+  legalCheckStatus      CarLegalStatus @default(PENDING)
+  repuveStatus          RepuveStatus   @default(UNKNOWN)
+  repuveCheckedAt       DateTime?
+  verificationReportUrl String? // PDF/report uploaded by admin (Buró Vehicular, manual v1)
+  verifiedByAdminId     String? // audit stamp
+  verifiedAt            DateTime?
+  photographedAt        DateTime?
+
+  // ----- lifecycle -----
+  status      CarStatus @default(DRAFT)
+  version     Int       @default(0) // optimistic lock guard against double-sell
+  publishedAt DateTime?
+
+  photos       CarPhoto[]
+  features     CarFeature[]
+  orders       Order[]
+  reservations Reservation[]
+  leads        Lead[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([status])
+  @@index([brandId, modelId])
+  @@index([priceMxn])
+  @@index([year])
+}
+
+model CarPhoto {
+  id                 String  @id @default(cuid())
+  carId              String
+  car                Car     @relation(fields: [carId], references: [id], onDelete: Cascade)
+  url                String
+  cloudinaryPublicId String?
+  sortOrder          Int     @default(0)
+  isCover            Boolean @default(false)
+  width              Int?
+  height             Int?
+
+  createdAt DateTime @default(now())
+
+  @@index([carId])
+}
+
+model CarFeature {
+  id    String @id @default(cuid())
+  carId String
+  car   Car    @relation(fields: [carId], references: [id], onDelete: Cascade)
+  label String
+
+  @@index([carId])
+}
+
+// =============================================================================
+// Sellers (third-party, brokerage side) + KYC
+// =============================================================================
+
+enum KycStatus {
+  NONE
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+model Seller {
+  id          String     @id @default(cuid())
+  email       String     @unique
+  name        String
+  phone       String?
+  payoutClabe String? // CLABE for remittance (Phase 2)
+  active      Boolean    @default(true)
+  cars        Car[]
+  kyc         SellerKyc?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model SellerKyc {
+  id                String    @id @default(cuid())
+  sellerId          String    @unique
+  seller            Seller    @relation(fields: [sellerId], references: [id], onDelete: Cascade)
+  rfc               String?
+  curp              String?
+  idDocType         String?
+  idDocNumber       String?
+  idDocFrontUrl     String?
+  idDocBackUrl      String?
+  status            KycStatus @default(PENDING)
+  verifiedAt        DateTime?
+  verifiedByAdminId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// =============================================================================
+// Buyers + KYC  (KYC required above PLD threshold or for crypto)
+// =============================================================================
+
+model User {
+  id              String    @id @default(cuid())
+  email           String    @unique
+  name            String?
+  phone           String?
+  emailVerifiedAt DateTime?
+  orders          Order[]
+  kyc             BuyerKyc?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model BuyerKyc {
+  id                String    @id @default(cuid())
+  userId            String    @unique
+  user              User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rfc               String?
+  curp              String?
+  idDocType         String?
+  idDocNumber       String?
+  idDocFrontUrl     String?
+  idDocBackUrl      String?
+  status            KycStatus @default(NONE)
+  verifiedAt        DateTime?
+  verifiedByAdminId String?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// =============================================================================
+// Admin users
+// =============================================================================
+
+enum AdminRole {
+  EDITOR
+  ADMIN
+  SUPERADMIN
+}
+
+model AdminUser {
+  id           String    @id @default(cuid())
+  email        String    @unique
+  name         String
+  role         AdminRole @default(EDITOR)
+  passwordHash String
+  active       Boolean   @default(true)
+  lastLoginAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// =============================================================================
+// Orders + Payments
+// =============================================================================
+
+enum OrderIntent {
+  DEPOSIT
+  FULL
+}
+
+enum OrderStatus {
+  AWAITING_PAYMENT
+  RESERVED // deposit paid, balance pending offline
+  PAID // full amount collected online
+  CANCELLED
+  EXPIRED
+  COMPLETED // delivered / title transferred
+  REFUNDED
+}
+
+enum PayoutStatus {
+  NONE // platform-owned car, no payout
+  PENDING // third-party car, remittance owed
+  PAID
+}
+
+model Order {
+  id          String @id @default(cuid())
+  orderNumber String @unique
+
+  carId String
+  car   Car    @relation(fields: [carId], references: [id])
+
+  buyerUserId String?
+  buyer       User?   @relation(fields: [buyerUserId], references: [id])
+  guestEmail  String?
+  guestName   String?
+  guestPhone  String?
+
+  intent             OrderIntent
+  priceMxnSnapshot   Int // frozen at order creation
+  depositMxnSnapshot Int?
+  amountDueMxn       Int // collected online by THIS order
+  balanceDueMxn      Int         @default(0) // remainder settled offline (deposit flow)
+
+  status  OrderStatus @default(AWAITING_PAYMENT)
+  amlFlag Boolean     @default(false) // price >= PLD identification threshold
+
+  // ----- remittance (third-party cars) -----
+  sellerPayoutAmount Int?
+  platformFeeAmount  Int?
+  payoutStatus       PayoutStatus @default(NONE)
+  payoutRef          String?
+
+  payments    Payment[]
+  reservation Reservation?
+  documents   OrderDocument[]
+  events      OrderEvent[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([carId])
+  @@index([status])
+  @@index([buyerUserId])
+}
+
+enum PaymentProviderType {
+  MERCADOPAGO
+  BITSO
+  NOWPAYMENTS
+}
+
+enum PaymentMethodType {
+  CARD
+  SPEI
+  OXXO
+  MSI
+  WALLET
+  CRYPTO_USDC
+  CRYPTO_USDT
+  OTHER
+}
+
+enum PaymentKind {
+  DEPOSIT
+  FULL
+}
+
+enum PaymentStatus {
+  PENDING
+  IN_PROCESS
+  CONFIRMING // crypto broadcast, awaiting confirmations
+  APPROVED
+  REJECTED
+  CANCELLED
+  EXPIRED
+  REFUNDED
+  PARTIALLY_REFUNDED
+  UNDERPAID
+  OVERPAID
+}
+
+model Payment {
+  id      String @id @default(cuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+
+  provider PaymentProviderType
+  method   PaymentMethodType?
+  kind     PaymentKind
+
+  providerRef String? // MP preference/payment id, crypto invoice id
+  checkoutUrl String?
+
+  status     PaymentStatus @default(PENDING)
+  amount     Int // expected amount (minor units of `currency`)
+  currency   String        @default("MXN")
+  amountPaid Int?
+  netAmount  Int?
+
+  idempotencyKey String @unique // `${orderId}:${kind}`
+  rawCreate      Json?
+  rawLatest      Json?
+  refundedAmount Int    @default(0)
+
+  refunds Refund[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([orderId])
+  @@index([provider, providerRef])
+  @@index([status])
+}
+
+enum RefundStatus {
+  PENDING
+  COMPLETED
+  FAILED
+}
+
+model Refund {
+  id                String       @id @default(cuid())
+  paymentId         String
+  payment           Payment      @relation(fields: [paymentId], references: [id], onDelete: Cascade)
+  amount            Int
+  status            RefundStatus @default(PENDING)
+  providerRefundRef String?
+  reason            String?
+  raw               Json?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([paymentId])
+}
+
+enum ReservationStatus {
+  ACTIVE
+  RELEASED
+  CONVERTED
+}
+
+model Reservation {
+  id         String            @id @default(cuid())
+  orderId    String            @unique
+  order      Order             @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  carId      String
+  car        Car               @relation(fields: [carId], references: [id])
+  expiresAt  DateTime
+  releasedAt DateTime?
+  status     ReservationStatus @default(ACTIVE)
+
+  createdAt DateTime @default(now())
+
+  @@index([carId])
+  @@index([status, expiresAt])
+}
+
+enum OrderDocumentType {
+  FACTURA
+  ENDOSO
+  ID
+  CONTRACT
+  OTHER
+}
+
+model OrderDocument {
+  id                String            @id @default(cuid())
+  orderId           String
+  order             Order             @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  type              OrderDocumentType
+  url               String
+  uploadedByAdminId String?
+
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+}
+
+model OrderEvent {
+  id      String @id @default(cuid())
+  orderId String
+  order   Order  @relation(fields: [orderId], references: [id], onDelete: Cascade)
+  type    String
+  message String
+  actor   String @default("system") // system | admin | buyer
+
+  createdAt DateTime @default(now())
+
+  @@index([orderId])
+}
+
+// =============================================================================
+// Webhook events  (inbound idempotency / audit)
+// =============================================================================
+
+model WebhookEvent {
+  id          String              @id @default(cuid())
+  provider    PaymentProviderType
+  eventId     String // provider event/notification id
+  providerRef String?
+  payload     Json
+  receivedAt  DateTime            @default(now())
+  processedAt DateTime?
+  error       String?
+
+  @@unique([provider, eventId])
+  @@index([providerRef])
+}
+
+// =============================================================================
+// Leads / inquiries
+// =============================================================================
+
+model Lead {
+  id      String  @id @default(cuid())
+  carId   String?
+  car     Car?    @relation(fields: [carId], references: [id])
+  name    String
+  email   String
+  phone   String?
+  message String?
+  source  String?
+
+  createdAt DateTime @default(now())
+
+  @@index([carId])
+}
