@@ -1,6 +1,6 @@
 import { createHmac, timingSafeEqual } from 'crypto';
 import type { PaymentStatus } from '@prisma/client';
-import { env, requireEnv } from '@/lib/env';
+import { requireEnv } from '@/lib/env';
 import { centavosToPesos, pesosToCentavos } from '@/lib/money';
 import type { IncomingWebhook, PaymentProvider } from './provider';
 import type {
@@ -123,8 +123,10 @@ export class NowPaymentsProvider implements PaymentProvider {
     };
   }
 
-  async refund(_input: RefundInput): Promise<RefundResult> {
-    throw new Error('Crypto refunds are handled out of band (on-chain) — not supported via API.');
+  async refund(input: RefundInput): Promise<RefundResult> {
+    throw new Error(
+      `Crypto refunds are handled out of band (on-chain) for ${input.providerRef} — not supported via API.`,
+    );
   }
 
   private verifySignature(rawBody: string, signature: string, secret: string): boolean {

@@ -215,9 +215,16 @@ export class MercadoPagoProvider implements PaymentProvider {
   }
 }
 
-function safeJson(raw: string): any {
+interface MpWebhookBody {
+  id?: number | string;
+  type?: string;
+  action?: string;
+  data?: { id?: number | string };
+}
+
+function safeJson(raw: string): MpWebhookBody | undefined {
   try {
-    return raw ? JSON.parse(raw) : undefined;
+    return raw ? (JSON.parse(raw) as MpWebhookBody) : undefined;
   } catch {
     return undefined;
   }
