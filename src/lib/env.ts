@@ -32,20 +32,38 @@ const schema = z.object({
   CLOUDINARY_API_SECRET: z.string().optional(),
 });
 
-const parsed = schema.safeParse(process.env);
+type Env = z.infer<typeof schema>;
 
-if (!parsed.success) {
-  console.error('❌ Invalid environment variables:', parsed.error.flatten().fieldErrors);
-  throw new Error('Invalid environment variables');
+let cached: Env | null = null;
+
+function load(): Env {
+  if (cached) return cached;
+  const parsed = schema.safeParse(process.env);
+  if (!parsed.success) {
+    console.error('❌ Invalid environment variables:', parsed.error.flatten().fieldErrors);
+    throw new Error('Invalid environment variables');
+  }
+  cached = parsed.data;
+  return cached;
 }
 
-export const env = parsed.data;
+/**
+ * Lazily-validated env. Validation runs on first property access (i.e. at
+ * request time), NOT at import — so `next build` can collect page data without
+ * the runtime secrets present (Railway/Vercel build the image before vars are
+ * injected). A missing/invalid required var still fails fast and clearly the
+ * first time it's actually read while serving a request.
+ */
+export const env: Env = new Proxy({} as Env, {
+  get: (_t, prop: string | symbol) => load()[prop as keyof Env],
+  has: (_t, prop: string | symbol) => prop in load(),
+});
 
 /** Read an optional integration credential, throwing a clear error if missing. */
-export function requireEnv(key: keyof typeof env): string {
+export function requireEnv(key: keyof Env): string {
   const value = env[key];
   if (!value || typeof value !== 'string') {
-    throw new Error(`Missing required environment variable: ${key}`);
+    throw new Error(`Missing required environment variable: ${String(key)}`);
   }
   return value;
 }

@@ -11,7 +11,12 @@ import { env } from '@/lib/env';
  */
 const COOKIE_NAME = 'amx_admin_session';
 const MAX_AGE_SECONDS = 60 * 60 * 24 * 7; // 7 days
-const secretKey = new TextEncoder().encode(env.AUTH_SECRET);
+
+// Computed lazily so importing this module doesn't read env at build time.
+let secretKeyCache: Uint8Array | null = null;
+function secretKey(): Uint8Array {
+  return (secretKeyCache ??= new TextEncoder().encode(env.AUTH_SECRET));
+}
 
 export interface AdminSession {
   id: string;
@@ -25,7 +30,7 @@ export async function createAdminSession(session: AdminSession): Promise<void> {
     .setProtectedHeader({ alg: 'HS256' })
     .setIssuedAt()
     .setExpirationTime('7d')
-    .sign(secretKey);
+    .sign(secretKey());
 
   const cookieStore = await cookies();
   cookieStore.set(COOKIE_NAME, token, {
@@ -42,7 +47,7 @@ export async function getAdminSession(): Promise<AdminSession | null> {
   const token = cookieStore.get(COOKIE_NAME)?.value;
   if (!token) return null;
   try {
-    const { payload } = await jwtVerify(token, secretKey);
+    const { payload } = await jwtVerify(token, secretKey());
     if (
       typeof payload.id === 'string' &&
       typeof payload.email === 'string' &&
