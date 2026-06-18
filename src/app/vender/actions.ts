@@ -42,6 +42,6 @@ export async function registerSeller(_prev: SellerState, formData: FormData): Pr
     await notifyAdmin('Nuevo vendedor registrado', `${name} (${email}, ${phone}) quiere vender su auto.`);
     return { ok: true };
   } catch {
-    return { error: 'No pudimos registrar tu solicitud. Intentá nuevamente.' };
+    return { error: 'No pudimos registrar tu solicitud. Intenta nuevamente.' };
   }
 }

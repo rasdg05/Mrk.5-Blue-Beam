@@ -253,3 +253,28 @@ export async function deleteCarPhoto(formData: FormData): Promise<void> {
   await prisma.carPhoto.delete({ where: { id } });
   revalidatePath(`/admin/autos/${carId}`);
 }
+
+/**
+ * Permanently delete a car (and its photos/features via cascade). Refuses if the
+ * car has any orders — those must be preserved for audit; unpublish instead.
+ */
+export async function deleteCar(formData: FormData): Promise<void> {
+  await requireAdmin('ADMIN');
+  const id = String(formData.get('id'));
+  const orderCount = await prisma.order.count({ where: { carId: id } });
+  if (orderCount > 0) {
+    redirect(
+      `/admin/autos/${id}?error=${encodeURIComponent(
+        'Este auto tiene órdenes asociadas; no se puede eliminar. Despublícalo en su lugar.',
+      )}`,
+    );
+  }
+  await prisma.$transaction([
+    prisma.lead.updateMany({ where: { carId: id }, data: { carId: null } }),
+    prisma.reservation.deleteMany({ where: { carId: id } }),
+    prisma.car.delete({ where: { id } }), // cascade removes photos + features
+  ]);
+  revalidatePath('/admin/autos');
+  revalidatePath('/autos');
+  redirect('/admin/autos');
+}

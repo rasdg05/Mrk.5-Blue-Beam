@@ -6,9 +6,12 @@ import { formatMXN } from '@/lib/money';
 import { carStatusLabel } from '@/lib/labels';
 import { Badge, Button, Card, Field, Input, Select, buttonClasses } from '@/components/ui';
 import { SubmitButton } from '@/components/submit-button';
+import { env } from '@/lib/env';
+import { PhotoUploader } from '@/components/photo-uploader';
 import { CarForm } from '../car-form';
 import {
   addCarPhoto,
+  deleteCar,
   deleteCarPhoto,
   markSold,
   publishCar,
@@ -45,6 +48,9 @@ export default async function EditCarPage({
     car.priceMxn > 0 &&
     car.legalCheckStatus === 'APPROVED' &&
     (car.paymentMode !== 'DEPOSIT' || (!!car.depositType && !!car.depositValue));
+
+  const cloudName = env.NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
+  const uploadPreset = env.NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
 
   return (
     <div>
@@ -111,11 +117,19 @@ export default async function EditCarPage({
                 </div>
               ))}
             </div>
+            {cloudName && uploadPreset ? (
+              <div className="mt-3">
+                <PhotoUploader carId={car.id} cloudName={cloudName} uploadPreset={uploadPreset} />
+              </div>
+            ) : null}
             <form action={addCarPhoto} className="mt-3 space-y-2">
               <input type="hidden" name="carId" value={car.id} />
-              <Input name="url" placeholder="URL de la foto (Cloudinary…)" />
+              <Input
+                name="url"
+                placeholder={cloudName ? 'o pega la URL de una foto' : 'URL de la foto (Cloudinary…)'}
+              />
               <SubmitButton variant="outline" size="sm" className="w-full" pendingText="Agregando…">
-                Agregar foto
+                Agregar por URL
               </SubmitButton>
             </form>
           </Card>
@@ -192,6 +206,20 @@ export default async function EditCarPage({
               <p className="mt-2 text-xs text-amber-600">Completa los requisitos para publicar.</p>
             )}
           </Card>
+
+          {/* Eliminar (zona de peligro) */}
+          <details className="rounded-xl border border-red-200 bg-red-50 p-4">
+            <summary className="cursor-pointer text-sm font-medium text-red-700">Eliminar auto</summary>
+            <p className="mt-2 text-xs text-red-600">
+              Borra el auto y sus fotos de forma permanente. No se puede deshacer.
+            </p>
+            <form action={deleteCar} className="mt-2">
+              <input type="hidden" name="id" value={car.id} />
+              <SubmitButton variant="danger" size="sm" className="w-full" pendingText="Eliminando…">
+                Sí, eliminar definitivamente
+              </SubmitButton>
+            </form>
+          </details>
         </div>
       </div>
     </div>

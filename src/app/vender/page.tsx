@@ -23,7 +23,7 @@ export default function SellPage() {
             <h1 className="text-3xl font-extrabold text-slate-900">Vende tu auto con respaldo</h1>
             <p className="mt-3 text-slate-600">
               Suma tu auto a un catálogo de autos verificados. Nos encargamos de la revisión legal,
-              el fotografiado y el cobro seguro con Mercado Pago o crypto. Vos recibís tu pago con
+              el fotografiado y el cobro seguro con Mercado Pago o crypto. Tú recibes tu pago, con
               todo en regla.
             </p>
             <div className="mt-8 space-y-4">
@@ -44,7 +44,7 @@ export default function SellPage() {
           <Card className="h-fit p-6">
             <h2 className="text-lg font-bold text-slate-900">Empieza ahora</h2>
             <p className="mb-4 mt-1 text-sm text-slate-500">
-              Dejanos tus datos y te contactamos para la verificación.
+              Déjanos tus datos y te contactamos para la verificación.
             </p>
             <SellerForm />
           </Card>

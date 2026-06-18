@@ -28,6 +28,8 @@ const schema = z.object({
   EMAIL_FROM: z.string().default('Autos MX <no-reply@example.com>'),
   ADMIN_NOTIFICATION_EMAIL: z.string().email().optional(),
 
+  NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME: z.string().optional(),
+  NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET: z.string().optional(),
   CLOUDINARY_API_KEY: z.string().optional(),
   CLOUDINARY_API_SECRET: z.string().optional(),
 });

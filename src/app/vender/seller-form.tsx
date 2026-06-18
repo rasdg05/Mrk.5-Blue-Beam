@@ -31,7 +31,7 @@ export function SellerForm() {
       <Field label="WhatsApp">
         <Input name="phone" required placeholder="+52 55 0000 0000" />
       </Field>
-      <Field label="Contanos sobre tu auto (opcional)">
+      <Field label="Cuéntanos sobre tu auto (opcional)">
         <Textarea name="message" placeholder="Marca, modelo, año, kilometraje…" />
       </Field>
       {state.error && (
