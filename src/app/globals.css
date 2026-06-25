@@ -9,9 +9,35 @@
 
 html {
   -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
 }
 
 body {
   @apply bg-slate-50 text-slate-900 antialiased;
   font-family: var(--font-sans);
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  @apply bg-brand-600/20 text-brand-900;
+}
+
+/* Slimmer, calmer scrollbars where supported */
+@supports (scrollbar-width: thin) {
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: theme('colors.slate.300') transparent;
+  }
+}
+
+/* Respect users who prefer reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
 }

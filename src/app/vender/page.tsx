@@ -20,16 +20,18 @@ export default function SellPage() {
       <main className="mx-auto w-full max-w-5xl flex-1 px-4 py-10">
         <div className="grid gap-10 lg:grid-cols-[1fr_400px]">
           <div>
-            <h1 className="text-3xl font-extrabold text-slate-900">Vende tu auto con respaldo</h1>
-            <p className="mt-3 text-slate-600">
+            <h1 className="animate-fade-up text-3xl font-extrabold tracking-tight text-slate-900 sm:text-4xl">
+              Vende tu auto con respaldo
+            </h1>
+            <p style={{ animationDelay: '90ms' }} className="mt-3 animate-fade-up text-slate-600">
               Suma tu auto a un catálogo de autos verificados. Nos encargamos de la revisión legal,
               el fotografiado y el cobro seguro con Mercado Pago o crypto. Tú recibes tu pago, con
               todo en regla.
             </p>
-            <div className="mt-8 space-y-4">
+            <div style={{ animationDelay: '170ms' }} className="mt-8 animate-fade-up space-y-4">
               {STEPS.map((s) => (
-                <div key={s.title} className="flex gap-4">
-                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600">
+                <div key={s.title} className="group flex gap-4">
+                  <div className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-brand-50 text-brand-600 transition-colors duration-300 group-hover:bg-brand-600 group-hover:text-white">
                     <s.icon size={20} />
                   </div>
                   <div>
@@ -41,7 +43,7 @@ export default function SellPage() {
             </div>
           </div>
 
-          <Card className="h-fit p-6">
+          <Card className="h-fit p-6 lg:sticky lg:top-20">
             <h2 className="text-lg font-bold text-slate-900">Empieza ahora</h2>
             <p className="mb-4 mt-1 text-sm text-slate-500">
               Déjanos tus datos y te contactamos para la verificación.

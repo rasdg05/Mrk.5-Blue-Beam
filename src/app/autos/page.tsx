@@ -4,6 +4,7 @@ import { pesosToCentavos } from '@/lib/money';
 import { CarCard } from '@/components/car-card';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
+import { Reveal } from '@/components/reveal';
 import { Button, Field, Input, Select } from '@/components/ui';
 import type { TransmissionType } from '@prisma/client';
 
@@ -49,12 +50,15 @@ export default async function CatalogPage({ searchParams }: { searchParams: Sear
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-8">
-        <h1 className="text-2xl font-bold text-slate-900">Catálogo</h1>
-        <p className="mt-1 text-sm text-slate-500">{cars.length} autos verificados disponibles</p>
+        <h1 className="text-2xl font-bold tracking-tight text-slate-900 sm:text-3xl">Catálogo</h1>
+        <p className="mt-1 text-sm text-slate-500">
+          {cars.length}{' '}
+          {cars.length === 1 ? 'auto verificado disponible' : 'autos verificados disponibles'}
+        </p>
 
         <div className="mt-6 grid gap-6 lg:grid-cols-[260px_1fr]">
           {/* Filters */}
-          <aside className="h-fit rounded-xl border border-slate-200 bg-white p-4">
+          <aside className="h-fit rounded-2xl border border-slate-200 bg-white p-4 shadow-card lg:sticky lg:top-20">
             <form method="get" className="space-y-4">
               <Field label="Buscar">
                 <Input name="q" defaultValue={q} placeholder="Ej. Hilux, Civic…" />
@@ -104,13 +108,15 @@ export default async function CatalogPage({ searchParams }: { searchParams: Sear
           {/* Results */}
           <section>
             {cars.length === 0 ? (
-              <p className="rounded-xl border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500">
+              <p className="rounded-2xl border border-dashed border-slate-300 bg-white p-10 text-center text-slate-500">
                 No encontramos autos con esos filtros.
               </p>
             ) : (
               <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
-                {cars.map((car) => (
-                  <CarCard key={car.id} car={car} />
+                {cars.map((car, i) => (
+                  <Reveal key={car.id} delay={(i % 3) * 70}>
+                    <CarCard car={car} />
+                  </Reveal>
                 ))}
               </div>
             )}
