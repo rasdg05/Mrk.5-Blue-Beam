@@ -7,6 +7,7 @@ import { prisma } from '@/lib/db';
 import { requireAdmin } from '@/lib/auth/session';
 import { pesosToCentavos } from '@/lib/money';
 import { slugify } from '@/lib/utils';
+import { insertSampleCars } from '@/lib/sample-cars';
 
 const carSchema = z.object({
   brandName: z.string().min(1, 'Marca requerida'),
@@ -274,6 +275,15 @@ export async function deleteCar(formData: FormData): Promise<void> {
     prisma.reservation.deleteMany({ where: { carId: id } }),
     prisma.car.delete({ where: { id } }), // cascade removes photos + features
   ]);
+  revalidatePath('/admin/autos');
+  revalidatePath('/autos');
+  redirect('/admin/autos');
+}
+
+/** One-click: load a set of published sample cars (idempotent). */
+export async function loadSampleCars(): Promise<void> {
+  await requireAdmin('ADMIN');
+  await insertSampleCars(prisma);
   revalidatePath('/admin/autos');
   revalidatePath('/autos');
   redirect('/admin/autos');

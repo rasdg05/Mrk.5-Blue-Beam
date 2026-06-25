@@ -1,9 +1,11 @@
 import Link from 'next/link';
-import { Plus } from 'lucide-react';
+import { Plus, Sparkles } from 'lucide-react';
 import { prisma } from '@/lib/db';
 import { formatMXN } from '@/lib/money';
 import { carStatusLabel } from '@/lib/labels';
 import { Badge, Card, buttonClasses } from '@/components/ui';
+import { SubmitButton } from '@/components/submit-button';
+import { loadSampleCars } from './actions';
 import type { CarStatus } from '@prisma/client';
 
 export const dynamic = 'force-dynamic';
@@ -26,11 +28,18 @@ export default async function AdminCarsPage() {
 
   return (
     <div>
-      <div className="flex items-center justify-between">
+      <div className="flex flex-wrap items-center justify-between gap-3">
         <h1 className="text-2xl font-bold text-slate-900">Autos</h1>
-        <Link href="/admin/autos/nuevo" className={buttonClasses('primary', 'md')}>
-          <Plus size={16} /> Nuevo auto
-        </Link>
+        <div className="flex items-center gap-2">
+          <form action={loadSampleCars}>
+            <SubmitButton variant="outline" size="md" pendingText="Cargando…">
+              <Sparkles size={16} /> Cargar Bugattis de muestra
+            </SubmitButton>
+          </form>
+          <Link href="/admin/autos/nuevo" className={buttonClasses('primary', 'md')}>
+            <Plus size={16} /> Nuevo auto
+          </Link>
+        </div>
       </div>
 
       <Card className="mt-6 overflow-hidden">
