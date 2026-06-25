@@ -19,6 +19,7 @@ import { Badge, Card } from '@/components/ui';
 import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { Gallery } from './gallery';
+import { CarViewer3D } from './car-viewer-3d';
 import { CheckoutForm } from './checkout-form';
 
 export const dynamic = 'force-dynamic';
@@ -86,6 +87,10 @@ export default async function CarDetailPage({ params }: { params: Promise<{ id: 
               <p className="mt-1 text-sm text-slate-500">
                 {car.brand.name} {car.model.name} {car.trim ?? ''}
               </p>
+            </div>
+
+            <div className="mt-6">
+              <CarViewer3D src="/models/sample-car.glb" title={car.title} sample />
             </div>
 
             <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
