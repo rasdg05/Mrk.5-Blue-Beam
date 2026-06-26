@@ -141,45 +141,52 @@ export function CarViewer3D({
           ),
         )}
 
-        {/* Live paint swatches */}
-        <div className="absolute left-3 top-3 flex items-center gap-1.5 rounded-full bg-white/85 px-2 py-1.5 shadow-sm backdrop-blur">
-          {COLORS.map((c, i) => (
-            <button
-              key={c.name}
-              type="button"
-              title={c.name}
-              aria-label={`Color ${c.name}`}
-              onClick={() => setColor(i)}
-              className={cn(
-                'h-6 w-6 rounded-full ring-2 ring-offset-1 transition',
-                color === i ? 'ring-brand-500' : 'ring-transparent hover:ring-slate-300',
-              )}
-              style={{ backgroundColor: c.hex }}
-            />
-          ))}
-        </div>
+        {/* Demo-only controls — the sample model supports live paint + interior.
+            Real scanned models (exterior) just orbit + AR. */}
+        {sample ? (
+          <>
+            <div className="absolute left-3 top-3 flex items-center gap-1.5 rounded-full bg-white/85 px-2 py-1.5 shadow-sm backdrop-blur">
+              {COLORS.map((c, i) => (
+                <button
+                  key={c.name}
+                  type="button"
+                  title={c.name}
+                  aria-label={`Color ${c.name}`}
+                  onClick={() => setColor(i)}
+                  className={cn(
+                    'h-6 w-6 rounded-full ring-2 ring-offset-1 transition',
+                    color === i ? 'ring-brand-500' : 'ring-transparent hover:ring-slate-300',
+                  )}
+                  style={{ backgroundColor: c.hex }}
+                />
+              ))}
+            </div>
 
-        {/* Exterior / Interior toggle */}
-        <div className="absolute right-3 top-3 flex rounded-full bg-white/85 p-1 text-xs font-medium shadow-sm backdrop-blur">
-          {(['exterior', 'interior'] as const).map((v) => (
-            <button
-              key={v}
-              type="button"
-              onClick={() => changeView(v)}
-              className={cn(
-                'rounded-full px-3 py-1 transition-colors',
-                view === v ? 'bg-brand-600 text-white' : 'text-slate-600 hover:text-slate-900',
-              )}
-            >
-              {v === 'exterior' ? 'Exterior' : 'Interior'}
-            </button>
-          ))}
-        </div>
+            <div className="absolute right-3 top-3 flex rounded-full bg-white/85 p-1 text-xs font-medium shadow-sm backdrop-blur">
+              {(['exterior', 'interior'] as const).map((v) => (
+                <button
+                  key={v}
+                  type="button"
+                  onClick={() => changeView(v)}
+                  className={cn(
+                    'rounded-full px-3 py-1 transition-colors',
+                    view === v ? 'bg-brand-600 text-white' : 'text-slate-600 hover:text-slate-900',
+                  )}
+                >
+                  {v === 'exterior' ? 'Exterior' : 'Interior'}
+                </button>
+              ))}
+            </div>
+          </>
+        ) : null}
       </div>
 
       <div className="flex items-center justify-between gap-2 px-4 py-2.5 text-xs text-slate-500">
         <span className="inline-flex items-center gap-1.5">
-          <Box size={13} /> Gira · cambia de color · entra al interior
+          <Box size={13} />{' '}
+          {sample
+            ? 'Gira · cambia de color · entra al interior'
+            : 'Gira · pellizca para acercar · tamaño real'}
         </span>
         {sample ? (
           <span className="rounded-full bg-slate-200 px-2 py-0.5 text-[11px] font-medium text-slate-500">

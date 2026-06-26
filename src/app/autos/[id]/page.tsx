@@ -20,6 +20,7 @@ import { SiteHeader } from '@/components/site-header';
 import { SiteFooter } from '@/components/site-footer';
 import { Gallery } from './gallery';
 import { CarViewer3D } from './car-viewer-3d';
+import { getCarModel } from '@/lib/car-models';
 import { CheckoutForm } from './checkout-form';
 
 export const dynamic = 'force-dynamic';
@@ -42,6 +43,7 @@ export default async function CarDetailPage({ params }: { params: Promise<{ id: 
   const available = car.status === 'PUBLISHED';
   const deposit = computeDepositCentavos(car.priceMxn, car.depositType, car.depositValue);
   const payAmount = car.paymentMode === 'DEPOSIT' ? deposit : car.priceMxn;
+  const carModel = getCarModel(car.id);
 
   const specs = [
     { icon: CalendarDays, label: 'Año', value: String(car.year) },
@@ -90,7 +92,11 @@ export default async function CarDetailPage({ params }: { params: Promise<{ id: 
             </div>
 
             <div className="mt-6">
-              <CarViewer3D src="/models/sample-car.glb" title={car.title} sample />
+              <CarViewer3D
+                src={carModel ?? '/models/sample-car.glb'}
+                title={car.title}
+                sample={!carModel}
+              />
             </div>
 
             <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3">
